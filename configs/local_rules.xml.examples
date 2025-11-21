@@ -1,0 +1,110 @@
+<!--
+  This file contains a collection of local_rules.xml configuration examples
+  extracted from the Wazuh lab work documents.
+-->
+
+<!--
+  Example 1: Custom Rule for Failed Login
+  From: Detecting ransomware with Wazuh by monitoring the file system
+
+  Purpose: Detects a custom log line for a failed login attempt for a
+           specific user and from a specific IP. This is an example of
+           how to clone and modify an existing rule.
+-->
+<group name="custom,syslog,authentication_failed,">
+  <rule id="100001" level="6">
+    <if_sid>5700</if_sid>
+    <match>Failed login attempt for user</match>
+    <regex>Failed login attempt for user '(\w+)' from (\b(?:\d{1,3}\.){3}\d{1,3}\b)</regex>
+    <description>Custom: Failed login attempt for user $(dstuser) from $(srcip)</description>
+    <group>authentication_failed,invalid_login,custom_rule</group>
+  </rule>
+</group>
+
+<!--
+  Example 2: Custom FIM Rules for /root Directory
+  From: Detecting ransomware with Wazuh by monitoring the file system
+
+  Purpose: Creates specific alerts when files are modified or added in the
+           /root directory. This is useful for monitoring for unauthorized
+           changes to critical user home directories.
+-->
+<group name="syscheck,pci_dss_11.5,nist_800_53_SI.7,">
+  <!-- Rules for Linux systems -->
+  <rule id="100200" level="7">
+    <if_sid>550</if_sid>
+    <field name="file">/root</field>
+    <description>File modified in /root directory.</description>
+  </rule>
+
+  <rule id="100201" level="7">
+    <if_sid>554</if_sid>
+    <field name="file">/root</field>
+    <description>File added to /root directory.</description>
+  </rule>
+</group>
+
+<!--
+  Example 3: Custom Rule for Blocking Blacklisted IPs
+  From: Rootkit Detection
+
+  Purpose: Triggers a high-level alert when a source IP address is found
+           in the 'blacklist-alienvault' CDB list. This rule is used to
+           trigger an active response to block the IP.
+-->
+<group name="attack,">
+  <rule id="100100" level="10">
+    <if_group>web|attack|attacks</if_group>
+    <list field="srcip" lookup="address_match_key">etc/lists/blacklist-alienvault</list>
+    <description>IP address found in AlienVault reputation database.</description>
+  </rule>
+</group>
+
+<!--
+  Example 4: Rules for IOC Builder Script
+  From: Integrate with Threat Intelligence and malware detection
+
+  Purpose: These rules generate alerts based on the output of the
+           ioc-builder.py script, indicating whether a new IOC has been
+           added to a list or if it was already present.
+-->
+<group name="iocs,">
+  <rule id="111000" level="0">
+    <decoded_as>ioc_builder</decoded_as>
+    <description>Grouping of IoC rules.</description>
+  </rule>
+
+  <rule id="111001" level="5">
+    <if_sid>111000</if_sid>
+    <field name="ioc_not_found">^True$</field>
+    <description>Suspicious IoC "$(ioc)" added to "$(ioc_file)".</description>
+  </rule>
+
+  <rule id="111002" level="5" ignore="60">
+    <if_sid>111000</if_sid>
+    <field name="ioc_not_found">^False$</field>
+    <description>Suspicious IoC "$(ioc)" already found in "$(ioc_file)".</description>
+  </rule>
+</group>
+
+<!--
+  Example 5: Rules for Active Response to Malware Removal
+  From: Integrate with Threat Intelligence and malware detection
+
+  Purpose: These rules alert on the success or failure of the
+           remove-threat.sh active response script, which is triggered
+           by a positive VirusTotal result.
+-->
+<group name="virustotal,">
+  <rule id="100092" level="12">
+    <if_sid>657</if_sid>
+    <match>Successfully removed threat</match>
+    <description>$(parameters.program) removed threat located at $(parameters.alert.data.virustotal.source.file)</description>
+  </rule>
+
+  <rule id="100093" level="12">
+    <if_sid>657</if_sid>
+    <match>Error removing threat</match>
+    <description>Error removing threat located at $(parameters.alert.data.virustotal.source.file)</description>
+  </rule>
+</group>

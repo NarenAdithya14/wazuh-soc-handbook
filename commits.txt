@@ -1,0 +1,53 @@
+# Commit 1: Initial project structure and documentation
+#
+# Files to add:
+# README.md
+# README_DESCRIPTION.md
+# .gitignore
+# LICENSE
+# docs/SETUP.md
+# docs/FIM_LOGS.md
+# docs/SOC_DASHBOARD.md
+# docs/ROOTKIT.md
+# docs/RANSOMWARE_FIM.md
+# docs/THREAT_INTEL.md
+
+feat: Initial commit with project structure and documentation
+
+Initializes the repository with the core documentation and structure.
+
+- Adds a main README with consolidated theory from all lab guides.
+- Adds individual, detailed guides in the docs/ directory.
+- Includes a .gitignore file for common temporary files.
+- Adds an MIT LICENSE.
+- Adds a README_DESCRIPTION.md for the GitHub repository description.
+
+# Commit 2: Add configuration and script examples
+#
+# Files to add:
+# configs/ossec.conf.examples
+# configs/local_rules.xml.examples
+# scripts/wazuh-ransomware-poc.py
+# scripts/README.md
+
+feat: Add configuration and script examples
+
+Adds example configuration files and the ransomware PoC script.
+
+- Aggregates all ossec.conf snippets into a single examples file.
+- Aggregates all local_rules.xml snippets into a single examples file.
+- Adds the Python script for the ransomware PoC.
+- Includes a README in the scripts/ directory with a strong warning against running the PoC script.
+
+# Commit 3: Add git push instructions
+#
+# Files to add:
+# push_instructions.txt
+# commits.txt
+
+docs: Add commit history and git push instructions
+
+Adds supporting files for repository setup.
+
+- `commits.txt` provides a suggested commit history.
+- `push_instructions.txt` provides the necessary git commands to initialize and push the repository.

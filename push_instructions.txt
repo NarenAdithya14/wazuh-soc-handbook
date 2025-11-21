@@ -1,0 +1,38 @@
+# Git Push Instructions
+
+# 1. Initialize a new Git repository
+git init
+
+# 2. Add all the files to the staging area
+git add .
+
+# 3. First commit: Initial project structure and documentation
+git commit -m "feat: Initial commit with project structure and documentation" -m "Initializes the repository with the core documentation and structure.
+
+- Adds a main README with consolidated theory from all lab guides.
+- Adds individual, detailed guides in the docs/ directory.
+- Includes a .gitignore file for common temporary files.
+- Adds an MIT LICENSE.
+- Adds a README_DESCRIPTION.md for the GitHub repository description."
+
+# 4. Second commit: Add configuration and script examples
+git add configs/ossec.conf.examples configs/local_rules.xml.examples scripts/wazuh-ransomware-poc.py scripts/README.md
+git commit -m "feat: Add configuration and script examples" -m "Adds example configuration files and the ransomware PoC script.
+
+- Aggregates all ossec.conf snippets into a single examples file.
+- Aggregates all local_rules.xml snippets into a single examples file.
+- Adds the Python script for the ransomware PoC.
+- Includes a README in the scripts/ directory with a strong warning against running the PoC script."
+
+# 5. Third commit: Add git push instructions
+git add push_instructions.txt commits.txt
+git commit -m "docs: Add commit history and git push instructions" -m "Adds supporting files for repository setup.
+
+- 'commits.txt' provides a suggested commit history.
+- 'push_instructions.txt' provides the necessary git commands to initialize and push the repository."
+
+# 6. Set the remote repository URL (replace with your actual URL)
+git remote add origin https://github.com/your-username/your-repo-name.git
+
+# 7. Push the repository to GitHub
+git push -u origin main

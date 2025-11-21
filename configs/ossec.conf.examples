@@ -1,0 +1,172 @@
+# This file contains a collection of ossec.conf configuration examples
+# extracted from the Wazuh lab work documents.
+
+# -----------------------------------------------------------------------------
+# Example 1: Wazuh Agent Client Configuration
+#
+# From: Wazuh Setup Guide
+# Purpose: Connects a Wazuh agent to the Wazuh manager.
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <client>
+    <server>
+      <address>YOUR_WAZUH_MANAGER_IP</address>
+      <port>1514</port>
+      <protocol>tcp</protocol>
+    </server>
+    <config-profile>kali, kali2024, kali2024.2</config-profile>
+    <notify_time>10</notify_time>
+    <time-reconnect>60</time-reconnect>
+    <auto_restart>yes</auto_restart>
+    <crypto_method>aes</crypto_method>
+  </client>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 2: File Integrity Monitoring (FIM) for a Directory
+#
+# From: Wazuh Log Analysis and File Integrity Monitoring Guide
+# Purpose: Monitors the /etc directory in real-time for any changes.
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <syscheck>
+    <directories check_all="yes" realtime="yes">/etc</directories>
+  </syscheck>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 3: FIM Configuration for Ransomware PoC
+#
+# From: Detecting ransomware with Wazuh by monitoring the file system
+# Purpose: Monitors a test directory with `whodata` enabled to see which
+#          user and process made the changes.
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <syscheck>
+    <directories check_all="yes" whodata="yes">/home/vagrant/test</directories>
+  </syscheck>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 4: Rootcheck Configuration
+#
+# From: Rootkit Detection
+# Purpose: Enables the rootkit detection module to run every hour.
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <rootcheck>
+    <enabled>yes</enabled>
+    <frequency>3600</frequency> <!-- every hour -->
+  </rootcheck>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 5: Active Response for Blocking Brute-Force Attacks
+#
+# From: Rootkit Detection
+# Purpose: Blocks an IP address for 600 seconds when a brute-force attack
+#          (rule 5712) is detected.
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <command>
+    <name>firewall-drop</name>
+    <executable>firewall-drop.sh</executable>
+    <expect>srcip</expect>
+    <timeout_allowed>yes</timeout_allowed>
+  </command>
+
+  <active-response>
+    <command>firewall-drop</command>
+    <location>local</location>
+    <rules_id>5712</rules_id>
+    <timeout>600</timeout>
+  </active-response>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 6: Active Response for Blocking Blacklisted IPs
+#
+# From: Rootkit Detection
+# Purpose: Blocks an IP for 60 seconds if it's found in a reputation
+#          blocklist (triggers custom rule 100100).
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <active-response>
+    <disabled>no</disabled>
+    <command>firewall-drop</command>
+    <location>local</location>
+    <rules_id>100100</rules_id>
+    <timeout>60</timeout>
+  </active-response>
+
+  <ruleset>
+    <!-- The following list must be defined for the rule to work -->
+    <list>etc/lists/blacklist-alienvault</list>
+  </ruleset>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 7: Active Response for IOC Builder Script
+#
+# From: Integrate with Threat Intelligence and malware detection
+# Purpose: Triggers the ioc-builder.py script to collect IOCs from alerts.
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <command>
+    <name>ioc-builder</name>
+    <executable>ioc-builder.py</executable>
+  </command>
+
+  <active-response>
+    <disabled>no</disabled>
+    <command>ioc-builder</command>
+    <location>server</location>
+    <rules_id>5712,87105,31103</rules_id>
+  </active-response>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 8: VirusTotal Integration
+#
+# From: Integrate with Threat Intelligence and malware detection
+# Purpose: Enables VirusTotal scans for files that trigger specific FIM rules.
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <integration>
+    <name>virustotal</name>
+    <api_key>YOUR_VIRUS_TOTAL_API_KEY</api_key>
+    <rule_id>100200,100201,554,550</rule_id>
+    <alert_format>json</alert_format>
+  </integration>
+</ossec_config>
+
+# -----------------------------------------------------------------------------
+# Example 9: Active Response for Removing Threats via VirusTotal
+#
+# From: Integrate with Threat Intelligence and malware detection
+# Purpose: Triggers the remove-threat.sh script when VirusTotal flags a
+#          file as malicious (rule 87105).
+# -----------------------------------------------------------------------------
+
+<ossec_config>
+  <command>
+    <name>remove-threat</name>
+    <executable>remove-threat.sh</executable>
+    <timeout_allowed>no</timeout_allowed>
+  </command>
+
+  <active-response>
+    <disabled>no</disabled>
+    <command>remove-threat</command>
+    <location>local</location>
+    <rules_id>87105</rules_id>
+  </active-response>
+</ossec_config>
